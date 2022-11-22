@@ -1,0 +1,9 @@
+{
+  "extends": "./node_modules/@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": false,
+    "outDir": "dist"
+  }
+}

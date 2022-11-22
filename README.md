@@ -1,4 +1,6 @@
-# @seeebiii/ses-verify-identities
+# @iter-idea/ses-verify-identities
+
+Forked from: `@seeebiii/ses-verify-identities`
 
 This package provides two constructs helping you to verify identities in [AWS SES](https://aws.amazon.com/ses/) using the [AWS CDK](https://aws.amazon.com/cdk/).
 
@@ -53,14 +55,14 @@ new VerifySesDomain(this, 'SesDomainVerification', {
 
 #### Options
 
- * `domainName` A domain name to be used for the SES domain identity, e.g. 'example.org'
- * `hostedZoneName` A hosted zone name to be matched with a Route 53 record, e.g. 'example.org'. Default: same as `domainName`.
- * `addTxtRecord` Whether to automatically add a TXT record to the hosed zone of your domain. This only works if your domain is managed by Route53. Otherwise disable it. Default: `true`.
- * `addMxRecord` Whether to automatically add a MX record to the hosted zone of your domain. This only works if your domain is managed by Route53. Otherwise disable it. Default: `true`.
- * `addDkimRecord` Whether to automatically add DKIM records to the hosted zone of your domain. This only works if your domain is managed by Route53. Otherwise disable it. Default: `true`.
- * `notificationTopic` An SNS topic where bounces, complaints or delivery notifications can be sent to. If none is provided, a new topic will be created and used for provided notification types.
- * `notificationTypes` Select for which notification types you want to configure a topic. Default: `[Bounce, Complaint]`.
- * `removalPolicy` Set a `RemovalPolicy` if you want to retain the resources. Default: `DESTROY`
+- `domainName` A domain name to be used for the SES domain identity, e.g. 'example.org'
+- `hostedZoneName` A hosted zone name to be matched with a Route 53 record, e.g. 'example.org'. Default: same as `domainName`.
+- `addTxtRecord` Whether to automatically add a TXT record to the hosed zone of your domain. This only works if your domain is managed by Route53. Otherwise disable it. Default: `true`.
+- `addMxRecord` Whether to automatically add a MX record to the hosted zone of your domain. This only works if your domain is managed by Route53. Otherwise disable it. Default: `true`.
+- `addDkimRecord` Whether to automatically add DKIM records to the hosted zone of your domain. This only works if your domain is managed by Route53. Otherwise disable it. Default: `true`.
+- `notificationTopic` An SNS topic where bounces, complaints or delivery notifications can be sent to. If none is provided, a new topic will be created and used for provided notification types.
+- `notificationTypes` Select for which notification types you want to configure a topic. Default: `[Bounce, Complaint]`.
+- `removalPolicy` Set a `RemovalPolicy` if you want to retain the resources. Default: `DESTROY`
 
 ### Verify an Email Address
 
@@ -72,9 +74,9 @@ new VerifySesEmailAddress(this, 'SesEmailVerification', {
 
 #### Options
 
- * `emailAddress` The email address to be verified, e.g. `hello@example.org`.
- * `region` An optional AWS region to validate the email address. Default: The custom resource will be created in the stack region.
- * `removalPolicy` Set a `RemovalPolicy` if you want to retain the resources. Default: `DESTROY`
+- `emailAddress` The email address to be verified, e.g. `hello@example.org`.
+- `region` An optional AWS region to validate the email address. Default: The custom resource will be created in the stack region.
+- `removalPolicy` Set a `RemovalPolicy` if you want to retain the resources. Default: `DESTROY`
 
 ## Contributing
 
@@ -83,11 +85,11 @@ Just open an issue or pull request :)
 
 These commands should help you while developing:
 
- * `npx projen`      init [projen](https://github.com/projen/projen) and synthesize changes in [.projenrc.js](.projenrc.js) to the project
- * `yarn build`      compile typescript to js
- * `yarn watch`      watch for changes and compile
- * `yarn test`       perform the jest unit tests
- * `yarn eslint`     validate code against best practices
+- `npx projen` init [projen](https://github.com/projen/projen) and synthesize changes in [.projenrc.js](.projenrc.js) to the project
+- `yarn build` compile typescript to js
+- `yarn watch` watch for changes and compile
+- `yarn test` perform the jest unit tests
+- `yarn eslint` validate code against best practices
 
 ## Author
 
