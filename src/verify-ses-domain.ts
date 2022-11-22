@@ -1,4 +1,4 @@
-import { CfnOutput, Fn, RemovalPolicy } from 'aws-cdk-lib';
+import { CfnOutput, Fn, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { CnameRecord, HostedZone, IHostedZone, MxRecord, TxtRecord } from 'aws-cdk-lib/aws-route53';
 import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
 import { AwsCustomResource, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
@@ -118,7 +118,8 @@ export class VerifySesDomain extends Construct {
     if (isTrueOrUndefined(addDkimRecords)) {
       const verifyDomainDkim = this.initDkimVerification(domainName);
       verifyDomainDkim.node.addDependency(verifyDomainIdentity);
-      this.addDkimRecords(verifyDomainDkim, zone, domainName);
+      const region = Stack.of(this).region;
+      this.addDkimRecords(verifyDomainDkim, zone, domainName, region);
     }
   }
 
@@ -205,13 +206,15 @@ export class VerifySesDomain extends Construct {
     });
   }
 
-  private addDkimRecords(verifyDomainDkim: AwsCustomResource, zone: IHostedZone, domainName: string) {
+  private addDkimRecords(verifyDomainDkim: AwsCustomResource, zone: IHostedZone, domainName: string, region: string) {
     [0, 1, 2].forEach(val => {
       const dkimToken = verifyDomainDkim.getResponseField(`DkimTokens.${val}`);
       const cnameRecord = new CnameRecord(this, 'SesDkimVerificationRecord' + val, {
         zone,
         recordName: `${dkimToken}._domainkey.${domainName}`,
-        domainName: `${dkimToken}.dkim.amazonses.com`
+        domainName: REGIONS_WITH_LOCAL_DKIM.includes(region)
+          ? `${dkimToken}.dkim.${region}.amazonses.com`
+          : `${dkimToken}.dkim.amazonses.com`
       });
       cnameRecord.node.addDependency(verifyDomainDkim);
     });
