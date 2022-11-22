@@ -8,6 +8,8 @@ import { generateSesPolicyForCustomResource } from './helper';
 
 export type NotificationType = 'Bounce' | 'Complaint' | 'Delivery';
 
+const REGIONS_WITH_LOCAL_DKIM = ['eu-south-1'];
+
 /**
  * @struct
  */
@@ -206,7 +208,9 @@ export class VerifySesDomain extends Construct {
       const cnameRecord = new CnameRecord(this, 'SesDkimVerificationRecord' + val, {
         zone,
         recordName: `${dkimToken}._domainkey.${domainName}`,
-        domainName: `${dkimToken}.dkim.amazonses.com`,
+        domainName: REGIONS_WITH_LOCAL_DKIM.includes(EnvironmentPlaceholders.CURRENT_REGION)
+           ? `${dkimToken}.dkim.${EnvironmentPlaceholders.CURRENT_REGION}.amazonses.com`
+           : `${dkimToken}.dkim.amazonses.com`,
       });
       cnameRecord.node.addDependency(verifyDomainDkim);
     });
