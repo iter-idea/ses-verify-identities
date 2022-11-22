@@ -1,6 +1,6 @@
 {
   "name": "@iter-idea/ses-verify-identities",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AWS CDK constructs to verify SES identities like domains and email addresses.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
