@@ -95,7 +95,7 @@ export class VerifySesDomain extends Construct {
       addTxtRecord,
       addMxRecord,
       addDkimRecords,
-      removalPolicy,
+      removalPolicy
     } = props;
 
     const verifyDomainIdentity = this.verifyDomainIdentity(domainName, removalPolicy);
@@ -128,26 +128,29 @@ export class VerifySesDomain extends Construct {
         service: 'SES',
         action: 'verifyDomainIdentity',
         parameters: {
-          Domain: domainName,
+          Domain: domainName
         },
-        physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken'),
+        physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken')
       },
       onUpdate: {
         service: 'SES',
         action: 'verifyDomainIdentity',
         parameters: {
-          Domain: domainName,
+          Domain: domainName
         },
-        physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken'),
+        physicalResourceId: PhysicalResourceId.fromResponse('VerificationToken')
       },
-      onDelete: removalPolicy === RemovalPolicy.RETAIN ? undefined : {
-        service: 'SES',
-        action: 'deleteIdentity',
-        parameters: {
-          Identity: domainName,
-        },
-      },
-      policy: generateSesPolicyForCustomResource('VerifyDomainIdentity', 'DeleteIdentity'),
+      onDelete:
+        removalPolicy === RemovalPolicy.RETAIN
+          ? undefined
+          : {
+              service: 'SES',
+              action: 'deleteIdentity',
+              parameters: {
+                Identity: domainName
+              }
+            },
+      policy: generateSesPolicyForCustomResource('VerifyDomainIdentity', 'DeleteIdentity')
     });
   }
 
@@ -163,7 +166,7 @@ export class VerifySesDomain extends Construct {
     return new TxtRecord(this, 'SesVerificationRecord', {
       zone,
       recordName: `_amazonses.${domainName}`,
-      values: [verifyDomainIdentity.getResponseField('VerificationToken')],
+      values: [verifyDomainIdentity.getResponseField('VerificationToken')]
     });
   }
 
@@ -174,9 +177,9 @@ export class VerifySesDomain extends Construct {
       values: [
         {
           hostName: Fn.sub(`inbound-smtp.${EnvironmentPlaceholders.CURRENT_REGION}.amazonaws.com`),
-          priority: 10,
-        },
-      ],
+          priority: 10
+        }
+      ]
     });
   }
 
@@ -186,41 +189,43 @@ export class VerifySesDomain extends Construct {
         service: 'SES',
         action: 'verifyDomainDkim',
         parameters: {
-          Domain: domainName,
+          Domain: domainName
         },
-        physicalResourceId: PhysicalResourceId.of(domainName + '-verify-domain-dkim'),
+        physicalResourceId: PhysicalResourceId.of(domainName + '-verify-domain-dkim')
       },
       onUpdate: {
         service: 'SES',
         action: 'verifyDomainDkim',
         parameters: {
-          Domain: domainName,
+          Domain: domainName
         },
-        physicalResourceId: PhysicalResourceId.of(domainName + '-verify-domain-dkim'),
+        physicalResourceId: PhysicalResourceId.of(domainName + '-verify-domain-dkim')
       },
-      policy: generateSesPolicyForCustomResource('VerifyDomainDkim'),
+      policy: generateSesPolicyForCustomResource('VerifyDomainDkim')
     });
   }
 
   private addDkimRecords(verifyDomainDkim: AwsCustomResource, zone: IHostedZone, domainName: string) {
-    [0, 1, 2].forEach((val) => {
+    [0, 1, 2].forEach(val => {
       const dkimToken = verifyDomainDkim.getResponseField(`DkimTokens.${val}`);
       const cnameRecord = new CnameRecord(this, 'SesDkimVerificationRecord' + val, {
         zone,
         recordName: `${dkimToken}._domainkey.${domainName}`,
-        domainName: REGIONS_WITH_LOCAL_DKIM.includes(EnvironmentPlaceholders.CURRENT_REGION)
-           ? `${dkimToken}.dkim.${EnvironmentPlaceholders.CURRENT_REGION}.amazonses.com`
-           : `${dkimToken}.dkim.amazonses.com`,
+        domainName: `${dkimToken}.dkim.amazonses.com`
       });
       cnameRecord.node.addDependency(verifyDomainDkim);
     });
   }
 
-  private createTopicOrUseExisting(domainName: string, verifyDomainIdentity: AwsCustomResource, existingTopic?: ITopic): ITopic {
+  private createTopicOrUseExisting(
+    domainName: string,
+    verifyDomainIdentity: AwsCustomResource,
+    existingTopic?: ITopic
+  ): ITopic {
     const topic = existingTopic ?? new Topic(this, 'SesNotificationTopic');
     new CfnOutput(this, domainName + 'SesNotificationTopic', {
       value: topic.topicArn,
-      description: 'SES notification topic for ' + domainName,
+      description: 'SES notification topic for ' + domainName
     });
     topic.node.addDependency(verifyDomainIdentity);
     return topic;
@@ -228,7 +233,7 @@ export class VerifySesDomain extends Construct {
 
   private addTopicToDomainIdentity(domainName: string, topic: ITopic, notificationTypes?: NotificationType[]) {
     if (notificationTypes?.length) {
-      notificationTypes.forEach((type) => {
+      notificationTypes.forEach(type => {
         this.addSesNotificationTopicForIdentity(domainName, type, topic);
       });
     } else {
@@ -241,7 +246,7 @@ export class VerifySesDomain extends Construct {
   private addSesNotificationTopicForIdentity(
     identity: string,
     notificationType: NotificationType,
-    notificationTopic: ITopic,
+    notificationTopic: ITopic
   ): void {
     const addTopic = new AwsCustomResource(this, `Add${notificationType}Topic-${identity}`, {
       onCreate: {
@@ -250,11 +255,11 @@ export class VerifySesDomain extends Construct {
         parameters: {
           Identity: identity,
           NotificationType: notificationType,
-          SnsTopic: notificationTopic.topicArn,
+          SnsTopic: notificationTopic.topicArn
         },
-        physicalResourceId: PhysicalResourceId.of(`${identity}-set-${notificationType}-topic`),
+        physicalResourceId: PhysicalResourceId.of(`${identity}-set-${notificationType}-topic`)
       },
-      policy: generateSesPolicyForCustomResource('SetIdentityNotificationTopic'),
+      policy: generateSesPolicyForCustomResource('SetIdentityNotificationTopic')
     });
 
     addTopic.node.addDependency(notificationTopic);
