@@ -151,7 +151,8 @@ export class VerifySesDomain extends Construct {
                 Identity: domainName
               }
             },
-      policy: generateSesPolicyForCustomResource('VerifyDomainIdentity', 'DeleteIdentity')
+      policy: generateSesPolicyForCustomResource('VerifyDomainIdentity', 'DeleteIdentity'),
+      installLatestAwsSdk: false
     });
   }
 
@@ -202,7 +203,8 @@ export class VerifySesDomain extends Construct {
         },
         physicalResourceId: PhysicalResourceId.of(domainName + '-verify-domain-dkim')
       },
-      policy: generateSesPolicyForCustomResource('VerifyDomainDkim')
+      policy: generateSesPolicyForCustomResource('VerifyDomainDkim'),
+      installLatestAwsSdk: false
     });
   }
 
@@ -262,7 +264,8 @@ export class VerifySesDomain extends Construct {
         },
         physicalResourceId: PhysicalResourceId.of(`${identity}-set-${notificationType}-topic`)
       },
-      policy: generateSesPolicyForCustomResource('SetIdentityNotificationTopic')
+      policy: generateSesPolicyForCustomResource('SetIdentityNotificationTopic'),
+      installLatestAwsSdk: false
     });
 
     addTopic.node.addDependency(notificationTopic);

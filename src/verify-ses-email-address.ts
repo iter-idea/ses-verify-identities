@@ -46,21 +46,16 @@ export class VerifySesEmailAddress extends Construct {
       onCreate: {
         service: 'SES',
         action: 'verifyEmailIdentity',
-        parameters: {
-          EmailAddress: emailAddress,
-        },
+        parameters: { EmailAddress: emailAddress },
         physicalResourceId: PhysicalResourceId.of('verify-' + emailAddress),
-        region,
+        region
       },
-      onDelete: removalPolicy === RemovalPolicy.RETAIN ? undefined : {
-        service: 'SES',
-        action: 'deleteIdentity',
-        parameters: {
-          Identity: emailAddress,
-        },
-        region,
-      },
+      onDelete:
+        removalPolicy === RemovalPolicy.RETAIN
+          ? undefined
+          : { service: 'SES', action: 'deleteIdentity', parameters: { Identity: emailAddress }, region },
       policy: generateSesPolicyForCustomResource('VerifyEmailIdentity', 'DeleteIdentity'),
+      installLatestAwsSdk: false
     });
   }
 }
